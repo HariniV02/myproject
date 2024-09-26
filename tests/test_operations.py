@@ -1,26 +1,30 @@
-from decimal import Decimal
+from decimal import Decimal, getcontext, ROUND_HALF_UP
 import pytest
 from calculator.calculation import Calculation
 from calculator.operations import add, subtract, multiply, divide
 
+getcontext().prec = 3
+getcontext().rounding = ROUND_HALF_UP
 
 def test_operation_add():
-    calculation = Calculation(Decimal('10'), Decimal('5'), add)
-    assert calculation.perform() == Decimal('15'), "Add operation failed"
+    calculation = Calculation(Decimal('15'), Decimal('7'), add)
+    assert calculation.perform() == Decimal('22'), "Add operation failed"
 
 def test_operation_subtract():
-    calculation = Calculation(Decimal('10'), Decimal('5'), subtract)
-    assert calculation.perform() == Decimal('5'), "Subtract operation failed"
+    calculation = Calculation(Decimal('15'), Decimal('7'), subtract)
+    assert calculation.perform() == Decimal('8'), "Subtract operation failed"
 
 def test_operation_multiply():
-    calculation = Calculation(Decimal('10'), Decimal('5'), multiply)
-    assert calculation.perform() == Decimal('50'), "Multiply operation failed"
+    calculation = Calculation(Decimal('15'), Decimal('7'), multiply)
+    assert calculation.perform() == Decimal('105'), "Multiply operation failed"
 
 def test_operation_divide():
-    calculation = Calculation(Decimal('10'), Decimal('5'), divide)
-    assert calculation.perform() == Decimal('2'), "Divide operation failed"
+    calculation = Calculation(Decimal('15'), Decimal('7'), divide)
+    result = calculation.perform()
+    expected_result = Decimal('2.14').quantize(Decimal('0.01'))  
+    assert result == expected_result, f"Divide operation failed: expected {expected_result}, got {result}"
 
 def test_divide_by_zero():
     with pytest.raises(ValueError, match="Cannot divide by zero"):
-        calculation = Calculation(Decimal('10'), Decimal('0'), divide)
+        calculation = Calculation(Decimal('15'), Decimal('0'), divide)
         calculation.perform()

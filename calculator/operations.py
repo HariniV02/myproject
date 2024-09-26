@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 def add(a: Decimal, b: Decimal) -> Decimal:
     return a + b
 

@@ -1,29 +1,26 @@
 from decimal import Decimal
 from typing import Callable, List
-
 from calculator.calculation import Calculation
 
 class Calculations:
-    history: List[Calculation] = []
+    _history: List[Calculation] = []
 
     @classmethod
     def add_calculation(cls, calculation: Calculation):
-        cls.history.append(calculation)
+        cls._history.append(calculation)
 
     @classmethod
     def get_history(cls) -> List[Calculation]:
-        return cls.history
+        return list(cls._history)
 
     @classmethod
     def clear_history(cls):
-        cls.history.clear()
+        cls._history.clear()
 
     @classmethod
     def get_latest(cls) -> Calculation:
-        if cls.history:
-            return cls.history[-1]
-        return None
+        return cls._history[-1] if cls._history else None
 
     @classmethod
     def find_by_operation(cls, operation_name: str) -> List[Calculation]:
-        return [calc for calc in cls.history if calc.operation.__name__ == operation_name]
+        return [calc for calc in cls._history if calc.operation.__name__ == operation_name]
