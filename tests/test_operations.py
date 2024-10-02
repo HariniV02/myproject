@@ -4,6 +4,8 @@ from decimal import Decimal, getcontext, ROUND_HALF_UP
 import pytest
 from calculator.calculation import Calculation
 from calculator.operations import add, subtract, multiply, divide
+from main import perform_calculation
+
 
 # Set precision and rounding mode for Decimal operations
 getcontext().prec = 3
@@ -37,3 +39,8 @@ def test_divide_by_zero():
     with pytest.raises(ValueError, match="Cannot divide by zero"):
         calculation = Calculation(Decimal('15'), Decimal('0'), divide)
         calculation.perform()
+
+def test_calculator_operations(generate_test_data):
+    for a, b, operation, expected in generate_test_data:
+        result = perform_calculation(a, b, operation)
+        assert result == expected
