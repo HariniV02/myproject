@@ -1,3 +1,4 @@
+""" Operations Testing module """
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 import pytest
 from calculator.calculation import Calculation
