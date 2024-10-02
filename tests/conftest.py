@@ -1,4 +1,8 @@
-import pytest
+"""
+Provides fixtures and utilities for generating test data dynamically
+using the Faker library and parametrize test functions in pytest.
+"""
+
 from decimal import Decimal
 from faker import Faker
 from calculator.operations import add, subtract, multiply, divide
@@ -22,14 +26,16 @@ def generate_test_data(num_records):
     for _ in range(num_records):
         # Generate random numbers for 'a' and 'b'
         a = Decimal(fake.random_number(digits=2))
-        b = Decimal(fake.random_number(digits=2)) if _ % 4 != 3 else Decimal(fake.random_number(digits=1))
+        b = (Decimal(fake.random_number(digits=2))
+            if _ % 4 !=3
+            else Decimal(fake.random_number(digits=1)))
 
         # Randomly choose an operation
         operation_name = fake.random_element(elements=list(operation_mappings.keys()))
         operation_func = operation_mappings[operation_name]
 
         # Avoid division by zero for divide operation
-        if operation_func == divide:
+        if operation_func == divide:  # pylint: disable=W0143
             b = Decimal('1') if b == Decimal('0') else b
 
         # Try to perform the operation and calculate the expected result
@@ -69,5 +75,7 @@ def pytest_generate_tests(metafunc):
                 for a, b, op_name, op_func, expected in test_data
             ]
 
-            # Parametrize the test function with the generated data
-            metafunc.parametrize("a,b,operation,expected", modified_parameters)
+            # Split the line to avoid exceeding the character limit
+            metafunc.parametrize(
+                "a,b,operation,expected", modified_parameters
+            )
