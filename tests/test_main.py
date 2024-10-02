@@ -1,3 +1,4 @@
+""" Testing main file"""
 import pytest
 from main import perform_calculation  # Ensure this import matches your project structure
 
@@ -11,7 +12,8 @@ from main import perform_calculation  # Ensure this import matches your project 
     ("a", "3", 'add', "Invalid number input: a or 3 is not a valid number."),
     ("5", "b", 'subtract', "Invalid number input: 5 or b is not a valid number.")
 ])
+
 def test_perform_calculation(a_string, b_string, operation_string, expected_string):
+    """module to test"""
     result = perform_calculation(a_string, b_string, operation_string)
     assert result == expected_string
-
