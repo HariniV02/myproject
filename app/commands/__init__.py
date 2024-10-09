@@ -18,3 +18,4 @@ class CommandHandler:
             return result  # Return the result of the command execution
         except KeyError:
             print(f"No such command: {command_name}")
+            

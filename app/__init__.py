@@ -1,4 +1,7 @@
-# app/__init__.py
+"""
+This module defines the `App` class which handles a command-line calculator.
+The calculator supports basic operations like add, subtract, multiply, and divide.
+"""
 
 from app.commands import CommandHandler
 from app.commands.add import AddCommand
@@ -6,11 +9,23 @@ from app.commands.subtract import SubtractCommand
 from app.commands.multiply import MultiplyCommand
 from app.commands.divide import DivideCommand
 
+# Disabling the warning for too few public methods as this class only needs one public method for now
+# pylint: disable=R0903
 class App:
+    """
+    A simple command-line calculator app that handles basic arithmetic operations:
+    add, subtract, multiply, and divide.
+    """
+
     def __init__(self):
+        """Initialize the command handler."""
         self.command_handler = CommandHandler()
 
     def start(self):
+        """
+        Start the calculator app, accepting user input for two numbers
+        and an operation, and performing the calculation.
+        """
         while True:
             print("\n--- Calculator ---")
             a = input("Enter the first number (or 'quit' to exit): ")
@@ -23,17 +38,18 @@ class App:
                 print("Exiting the app. Goodbye!")
                 break
 
-            operation = input("Enter the operation (add, subtract, multiply, divide) or 'quit' to exit: ")
+            operation = input(
+                "Enter the operation (add, subtract, multiply, divide) or 'quit' to exit: "
+            )
             if operation.lower() == 'quit':
                 print("Exiting the app. Goodbye!")
                 break
 
-            # Try to convert the input values to integers
             try:
                 a = int(a)
                 b = int(b)
 
-                # Register commands based on the operation
+                # Register and execute commands based on the operation
                 if operation == 'add':
                     self.command_handler.register_command("add", AddCommand(a, b))
                     result = self.command_handler.execute_command("add")
