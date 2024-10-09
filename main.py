@@ -1,28 +1,109 @@
-def perform_calculation(a, b, operation):
-    try:
-        a = int(a)
-        b = int(b)
-        if operation == 'add':
-            return f"The result of {a} add {b} is equal to {a + b}"
-        elif operation == 'subtract':
-            return f"The result of {a} subtract {b} is equal to {a - b}"
-        elif operation == 'multiply':
-            return f"The result of {a} multiply {b} is equal to {a * b}"
-        elif operation == 'divide':
-            if b == 0:
-                return "An error occurred: Cannot divide by zero"
-            return f"The result of {a} divide {b} is equal to {a // b}"
+from abc import ABC, abstractmethod
+
+# Define the Command interface
+class Command(ABC):
+    @abstractmethod
+    def execute(self):
+        pass
+
+# Define individual command classes for each operation
+class AddCommand(Command):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def execute(self):
+        return f"The result of {self.a} add {self.b} is equal to {self.a + self.b}"
+
+class SubtractCommand(Command):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def execute(self):
+        return f"The result of {self.a} subtract {self.b} is equal to {self.a - self.b}"
+
+class MultiplyCommand(Command):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def execute(self):
+        return f"The result of {self.a} multiply {self.b} is equal to {self.a * self.b}"
+
+class DivideCommand(Command):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def execute(self):
+        if self.b == 0:
+            return "An error occurred: Cannot divide by zero"
+        return f"The result of {self.a} divide {self.b} is equal to {self.a // self.b}"
+
+# MenuCommand to display the available operations
+class MenuCommand(Command):
+    def execute(self):
+        return "Available operations: add, subtract, multiply, divide, menu"
+
+# CommandHandler to manage the operations
+class CommandHandler:
+    def __init__(self):
+        self.commands = {}
+
+    def register_command(self, operation, command):
+        self.commands[operation] = command
+
+    def execute_command(self, operation):
+        if operation in self.commands:
+            return self.commands[operation].execute()
         else:
-            return f"Unknown operation: {operation}"
-    except ValueError:
-        return f"Invalid number input: {a} or {b} is not a valid number."
+            return "Unknown operation."
 
+# Main function to handle user input
 def main():
-    a = input("Enter first number: ")
-    b = input("Enter second number: ")
-    operation = input("Enter operation (add, subtract, multiply, divide): ")
-    result = perform_calculation(a, b, operation)
-    print(result)
+    handler = CommandHandler()
 
+    while True:
+        operation = input("Enter operation (add, subtract, multiply, divide, menu) or 'quit' to exit: ")
+
+        if operation == 'quit':
+            print("Exiting the app. Goodbye!")
+            break
+
+        if operation == 'menu':
+            handler.register_command('menu', MenuCommand())
+            print(handler.execute_command('menu'))
+            continue  # Skip to the next iteration for menu
+
+        a = input("Enter first number: ")
+        b = input("Enter second number: ")
+
+        # Try converting inputs to integers
+        try:
+            a = int(a)
+            b = int(b)
+
+            # Register the commands based on the input operation
+            if operation == 'add':
+                handler.register_command('add', AddCommand(a, b))
+            elif operation == 'subtract':
+                handler.register_command('subtract', SubtractCommand(a, b))
+            elif operation == 'multiply':
+                handler.register_command('multiply', MultiplyCommand(a, b))
+            elif operation == 'divide':
+                handler.register_command('divide', DivideCommand(a, b))
+            else:
+                print("Unknown operation.")
+                continue
+
+            # Execute the command
+            result = handler.execute_command(operation)
+            print(result)
+
+        except ValueError:
+            print("Invalid input. Please enter valid numbers.")
+
+# Ensure the program starts correctly
 if __name__ == "__main__":
     main()
