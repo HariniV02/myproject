@@ -1,23 +1,27 @@
 from app.commands import CommandHandler
-from app.commands.discord import DiscordCommand
-from app.commands.exit import ExitCommand
-from app.commands.goodbye import GoodbyeCommand
-from app.commands.greet import GreetCommand
-from app.commands.menu import MenuCommand
+from abc import ABC, abstractmethod
 
-class App:
-    def __init__(self): # Constructor
-        self.command_handler = CommandHandler()
+class Command(ABC):
+    @abstractmethod
+    def execute(self):
+        pass
 
+class CommandHandler:
+    def __init__(self):
+        self.commands = {}
 
-    def start(self):
-        # Register commands here
-        self.command_handler.register_command("add", AddCommand())
-        #self.command_handler.register_command("goodbye", GoodbyeCommand())
-        #self.command_handler.register_command("exit", ExitCommand())
-        #self.command_handler.register_command("menu", MenuCommand())
-        #self.command_handler.register_command("discord", DiscordCommand())
+    def register_command(self, command_name: str, command: Command):
+        self.commands[command_name] = command
 
-        print("Type 'exit' to exit.")
-        while True:  #REPL Read, Evaluate, Print, Loop
-            self.command_handler.execute_command(input(">>> ").strip())
+    def execute_command(self, command_name: str):
+        """ Look before you leap (LBYL) - Use when its less likely to work
+        if command_name in self.commands:
+            self.commands[command_name].execute()
+        else:
+            print(f"No such command: {command_name}")
+        """
+        """Easier to ask for forgiveness than permission (EAFP) - Use when its going to most likely work"""
+        try:
+            self.commands[command_name].execute()
+        except KeyError:
+            print(f"No such command: {command_name}")
