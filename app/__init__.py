@@ -1,6 +1,6 @@
 import pkgutil
 import importlib
-from app.commands import CommandHandler, Command  
+from app.commands import CommandHandler, Command
 
 class App:
     def __init__(self):
