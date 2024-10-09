@@ -1,10 +1,11 @@
 # tests/test_all_commands.py
 import pytest
-from app.commands.add import AddCommand
-from app.commands.subtract import SubtractCommand
-from app.commands.multiply import MultiplyCommand
-from app.commands.divide import DivideCommand
-from app.commands.menu import MenuCommand
+from app.plugins.add import AddCommand
+from app.plugins.subtract import SubtractCommand
+from app.plugins.multiply import MultiplyCommand
+from app.plugins.divide import DivideCommand
+from app.plugins.menu import MenuCommand
+
 
 # Test for AddCommand
 def test_add_command():

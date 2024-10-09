@@ -1,10 +1,43 @@
 import pytest
+from app import App
 from app.commands import CommandHandler
-from app.commands.add import AddCommand
-from app.commands.subtract import SubtractCommand
-from app.commands.multiply import MultiplyCommand
-from app.commands.divide import DivideCommand
+from app.plugins.add import AddCommand
+from app.plugins.subtract import SubtractCommand
+from app.plugins.multiply import MultiplyCommand
+from app.plugins.divide import DivideCommand
 
+
+# Test REPL behavior in the App class
+
+def test_app_start_exit_command(capfd, monkeypatch):
+    """Test that the REPL exits correctly on 'exit' command."""
+    # Simulate user entering 'exit'
+    monkeypatch.setattr('builtins.input', lambda _: 'exit')
+    app = App()
+    with pytest.raises(SystemExit) as e:
+        app.start()
+    assert e.type == SystemExit
+
+def test_app_start_unknown_command(capfd, monkeypatch):
+    """Test how the REPL handles an unknown command before exiting."""
+    # Simulate user entering an unknown command followed by 'exit'
+    inputs = iter(['unknown_command', 'exit'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+
+    app = App()
+    
+    with pytest.raises(SystemExit) as excinfo:
+        app.start()
+    
+    # Optionally, check for specific exit code or message
+    # assert excinfo.value.code == expected_exit_code
+    
+    # Verify that the unknown command was handled as expected
+    captured = capfd.readouterr()
+    assert "No such command: unknown_command" in captured.out
+
+
+# Test CommandHandler functionality with various commands
 
 def test_register_and_execute_multiply_command(capsys):
     handler = CommandHandler()

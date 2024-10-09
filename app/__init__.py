@@ -1,74 +1,35 @@
-"""
-This module defines the `App` class which handles a command-line calculator.
-The calculator supports basic operations like add, subtract, multiply, and divide.
-"""
+import pkgutil
+import importlib
+from app.commands import CommandHandler, Command  
 
-from app.commands import CommandHandler
-from app.commands.add import AddCommand
-from app.commands.subtract import SubtractCommand
-from app.commands.multiply import MultiplyCommand
-from app.commands.divide import DivideCommand
-
-# Disabling the warning for too few public methods as this class only needs one public method for now
-# pylint: disable=R0903
 class App:
-    """
-    A simple command-line calculator app that handles basic arithmetic operations:
-    add, subtract, multiply, and divide.
-    """
-
     def __init__(self):
-        """Initialize the command handler."""
+        # Initialize the command handler
         self.command_handler = CommandHandler()
 
+    def load_plugins(self):
+        # Dynamically load all plugins in the plugins directory
+        plugins_package = 'app.plugins'
+        for _, plugin_name, is_pkg in pkgutil.iter_modules([plugins_package.replace('.', '/')]):
+            if is_pkg:  # Ensure it's a package
+                plugin_module = importlib.import_module(f'{plugins_package}.{plugin_name}')
+                for item_name in dir(plugin_module):
+                    item = getattr(plugin_module, item_name)
+                    try:
+                        if issubclass(item, Command):  # Assuming a BaseCommand class exists
+                            self.command_handler.register_command(plugin_name, item())
+                    except TypeError:
+                        pass  # item was not a class or was not a subclass of Command
+
     def start(self):
-        """
-        Start the calculator app, accepting user input for two numbers
-        and an operation, and performing the calculation.
-        """
+        self.load_plugins()
         while True:
-            print("\n--- Calculator ---")
-            a = input("Enter the first number (or 'quit' to exit): ")
-            if a.lower() == 'quit':
-                print("Exiting the app. Goodbye!")
-                break
-
-            b = input("Enter the second number: ")
-            if b.lower() == 'quit':
-                print("Exiting the app. Goodbye!")
-                break
-
-            operation = input(
-                "Enter the operation (add, subtract, multiply, divide) or 'quit' to exit: "
-            )
-            if operation.lower() == 'quit':
-                print("Exiting the app. Goodbye!")
-                break
-
-            try:
-                a = int(a)
-                b = int(b)
-
-                # Register and execute commands based on the operation
-                if operation == 'add':
-                    self.command_handler.register_command("add", AddCommand(a, b))
-                    result = self.command_handler.execute_command("add")
-                elif operation == 'subtract':
-                    self.command_handler.register_command("subtract", SubtractCommand(a, b))
-                    result = self.command_handler.execute_command("subtract")
-                elif operation == 'multiply':
-                    self.command_handler.register_command("multiply", MultiplyCommand(a, b))
-                    result = self.command_handler.execute_command("multiply")
-                elif operation == 'divide':
-                    if b == 0:
-                        result = "Error: Cannot divide by zero."
-                    else:
-                        self.command_handler.register_command("divide", DivideCommand(a, b))
-                        result = self.command_handler.execute_command("divide")
+            user_input = input("Enter a command (or 'exit' to quit): ")
+            if user_input.lower() == 'exit':
+                raise SystemExit("Exiting app.")
+            else:
+                result = self.command_handler.execute_command(user_input)
+                if result is None:
+                    print(f"No such command: {user_input}")
                 else:
-                    result = f"Unknown operation: {operation}"
-
-                print(f"Result: {result}")
-
-            except ValueError:
-                print("Error: Invalid input. Please enter valid numbers.")
+                    print(result)
