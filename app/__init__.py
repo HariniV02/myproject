@@ -1,4 +1,5 @@
 # app/__init__.py
+
 from app.commands import CommandHandler
 from app.commands.add import AddCommand
 from app.commands.subtract import SubtractCommand
@@ -7,46 +8,51 @@ from app.commands.divide import DivideCommand
 
 class App:
     def __init__(self):
-        # Initialize CommandHandler
-        self.handler = CommandHandler()
+        self.command_handler = CommandHandler()
 
     def start(self):
-        # Main loop for user interaction
         while True:
             print("\n--- Calculator ---")
-            a = input("Enter the first number: ")
-            b = input("Enter the second number: ")
-            operation = input("Enter the operation (add, subtract, multiply, divide) or 'quit' to exit: ")
-
-            if operation == 'quit':
+            a = input("Enter the first number (or 'quit' to exit): ")
+            if a.lower() == 'quit':
                 print("Exiting the app. Goodbye!")
                 break
 
-            result = self.perform_calculation(a, b, operation)
-            print(f"Result: {result}")
+            b = input("Enter the second number: ")
+            if b.lower() == 'quit':
+                print("Exiting the app. Goodbye!")
+                break
 
-    def perform_calculation(self, a, b, operation):
-        try:
-            a = int(a)  # Ensure 'a' is an integer
-            b = int(b)  # Ensure 'b' is an integer
+            operation = input("Enter the operation (add, subtract, multiply, divide) or 'quit' to exit: ")
+            if operation.lower() == 'quit':
+                print("Exiting the app. Goodbye!")
+                break
 
-            # Register and execute commands based on user input
-            if operation == 'add':
-                self.handler.register_command('add', AddCommand(a, b))
-                return self.handler.execute_command('add')
-            elif operation == 'subtract':
-                self.handler.register_command('subtract', SubtractCommand(a, b))
-                return self.handler.execute_command('subtract')
-            elif operation == 'multiply':
-                self.handler.register_command('multiply', MultiplyCommand(a, b))
-                return self.handler.execute_command('multiply')
-            elif operation == 'divide':
-                if b == 0:
-                    return "Error: Cannot divide by zero."
-                self.handler.register_command('divide', DivideCommand(a, b))
-                return self.handler.execute_command('divide')
-            else:
-                return f"Unknown operation: {operation}"
+            # Try to convert the input values to integers
+            try:
+                a = int(a)
+                b = int(b)
 
-        except ValueError:
-            return "Error: Invalid input. Please enter valid numbers."
+                # Register commands based on the operation
+                if operation == 'add':
+                    self.command_handler.register_command("add", AddCommand(a, b))
+                    result = self.command_handler.execute_command("add")
+                elif operation == 'subtract':
+                    self.command_handler.register_command("subtract", SubtractCommand(a, b))
+                    result = self.command_handler.execute_command("subtract")
+                elif operation == 'multiply':
+                    self.command_handler.register_command("multiply", MultiplyCommand(a, b))
+                    result = self.command_handler.execute_command("multiply")
+                elif operation == 'divide':
+                    if b == 0:
+                        result = "Error: Cannot divide by zero."
+                    else:
+                        self.command_handler.register_command("divide", DivideCommand(a, b))
+                        result = self.command_handler.execute_command("divide")
+                else:
+                    result = f"Unknown operation: {operation}"
+
+                print(f"Result: {result}")
+
+            except ValueError:
+                print("Error: Invalid input. Please enter valid numbers.")
