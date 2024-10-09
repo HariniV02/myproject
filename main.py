@@ -1,3 +1,5 @@
+from app import App
+
 def perform_calculation(a, b, operation):
     try:
         a = int(a)
@@ -17,12 +19,8 @@ def perform_calculation(a, b, operation):
     except ValueError:
         return f"Invalid number input: {a} or {b} is not a valid number."
 
-def main():
-    a = input("Enter first number: ")
-    b = input("Enter second number: ")
-    operation = input("Enter operation (add, subtract, multiply, divide): ")
-    result = perform_calculation(a, b, operation)
-    print(result)
+
 
 if __name__ == "__main__":
-    main()
+    app = App()  # Instantiate the App class
+    app.start()  # Start the app (which will handle the calculations)

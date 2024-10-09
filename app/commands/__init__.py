@@ -1,4 +1,5 @@
-from app.commands import CommandHandler
+from abc import ABC, abstractmethod
+
 from abc import ABC, abstractmethod
 
 class Command(ABC):
@@ -14,14 +15,8 @@ class CommandHandler:
         self.commands[command_name] = command
 
     def execute_command(self, command_name: str):
-        """ Look before you leap (LBYL) - Use when its less likely to work
-        if command_name in self.commands:
-            self.commands[command_name].execute()
-        else:
-            print(f"No such command: {command_name}")
-        """
-        """Easier to ask for forgiveness than permission (EAFP) - Use when its going to most likely work"""
         try:
-            self.commands[command_name].execute()
+            result = self.commands[command_name].execute()
+            return result  # Return the result of the command execution
         except KeyError:
             print(f"No such command: {command_name}")

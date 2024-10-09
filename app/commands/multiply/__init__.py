@@ -6,4 +6,6 @@ class MultiplyCommand(Command):
         self.b = b
 
     def execute(self):
-        return self.a * self.b
+        result = self.a * self.b
+        print(f"MultiplyCommand: {self.a} * {self.b} = {result}")
+        return result
