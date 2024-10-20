@@ -46,3 +46,5 @@ def test_menu_command(capsys):
     
     # Assert that 'Menu' was printed
     assert captured.out == "Menu\n"
+
+

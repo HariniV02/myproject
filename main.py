@@ -1,4 +1,19 @@
+import os
+import logging
 from abc import ABC, abstractmethod
+
+# Create the logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/app.log'),  # Log to file
+        logging.StreamHandler()               # Also log to console
+    ]
+)
 
 # Define the Command interface
 class Command(ABC):
@@ -68,12 +83,13 @@ def main():
         operation = input("Enter operation (add, subtract, multiply, divide, menu) or 'quit' to exit: ")
 
         if operation == 'quit':
-            print("Exiting the app. Goodbye!")
+            logging.info("Exiting the app. Goodbye!")
             break
 
         if operation == 'menu':
             handler.register_command('menu', MenuCommand())
             print(handler.execute_command('menu'))
+            logging.info("Displayed menu options.")
             continue  # Skip to the next iteration for menu
 
         a = input("Enter first number: ")
@@ -94,14 +110,17 @@ def main():
             elif operation == 'divide':
                 handler.register_command('divide', DivideCommand(a, b))
             else:
+                logging.error("Unknown operation.")
                 print("Unknown operation.")
                 continue
 
             # Execute the command
             result = handler.execute_command(operation)
             print(result)
+            logging.info(f"Executed {operation} command with result: {result}")
 
         except ValueError:
+            logging.error("Invalid input. Please enter valid numbers.")
             print("Invalid input. Please enter valid numbers.")
 
 # Ensure the program starts correctly
